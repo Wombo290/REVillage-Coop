@@ -1,0 +1,24 @@
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# Packaged builds
+*.zip
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors
+.vscode/
+.idea/
+
+# Native build output
+build/
+out/
+.vs/
+*.obj
+*.pdb
+*.ilk
