@@ -2,7 +2,7 @@
 
 A multiplayer/co-op framework and developer toolkit for **Resident Evil Village** using **REFramework**.
 
-> Status: early development. The current stable toolkit baseline is v0.3.5a.
+> Status: early development. The current stable toolkit baseline is v0.3.5a; the v0.3.6 Reflection Probe has been validated in Resident Evil Village with REFramework v1.5.9.7.
 
 ## Current features
 
@@ -12,11 +12,18 @@ A multiplayer/co-op framework and developer toolkit for **Resident Evil Village*
 - Runtime status, uptime, FPS, and frame counters
 - Component scanner
 - Developer Console with runtime, native, reflection, and error panels
+- Read-only player reflection probe with field/method compatibility reporting
+
+## Reflection Probe (v0.3.6)
+
+Copy `reframework/autorun/` into the matching REFramework directory, open **Script Generated UI**, and click **Run player reflection probe**. The probe invokes only the listed player getters, then reads type metadata; it does not read field values or invoke any enumerated methods.
+
+The probe first uses RE8's established `sdk.game_namespace("PropsManager"):get_Player()` path, then tries `app.PlayerManager` accessors as diagnostic fallbacks. Failed paths are reported safely so Resident Evil Village builds can be compared without taking down the existing component scanner.
 
 ## Development roadmap
 
 - **v0.3.5a** — Developer Console ✅
-- **v0.3.6** — Reflection Probe
+- **v0.3.6** — Reflection Probe (live validated)
 - **v0.3.7** — Field Explorer
 - **v0.3.8** — Method Explorer
 - **v0.4.0** — Integrated Developer Toolkit
