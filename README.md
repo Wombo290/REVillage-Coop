@@ -18,7 +18,7 @@ A multiplayer/co-op framework and developer toolkit for **Resident Evil Village*
 
 Copy `reframework/autorun/` into the matching REFramework directory, open **Script Generated UI**, and click **Run player reflection probe**. The probe invokes only the listed player getters, then reads type metadata; it does not read field values or invoke any enumerated methods.
 
-Assumption: the active player is exposed by `app.PlayerManager` through `get_CurrentPlayer`, `get_Player`, or `get_ManualPlayer`. Failed paths are reported safely so Resident Evil Village builds can be compared without taking down the existing component scanner.
+The probe first uses RE8's established `sdk.game_namespace("PropsManager"):get_Player()` path, then tries `app.PlayerManager` accessors as diagnostic fallbacks. Failed paths are reported safely so Resident Evil Village builds can be compared without taking down the existing component scanner.
 
 ## Development roadmap
 

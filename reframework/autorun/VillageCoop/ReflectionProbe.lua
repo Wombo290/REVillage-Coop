@@ -2,6 +2,11 @@ local ReflectionProbe = {}
 
 ReflectionProbe.DEFAULT_PLAYER_PATHS = {
     {
+        singleton = "PropsManager",
+        game_namespace = true,
+        accessors = { "get_Player" },
+    },
+    {
         singleton = "app.PlayerManager",
         accessors = { "get_CurrentPlayer", "get_Player", "get_ManualPlayer" },
     },
@@ -55,17 +60,27 @@ end
 function ReflectionProbe.resolve_player(sdk_api, paths)
     local checks = {}
     for _, path in ipairs(paths or ReflectionProbe.DEFAULT_PLAYER_PATHS) do
-        local manager, manager_err = attempt("sdk.get_managed_singleton(" .. path.singleton .. ")", function()
-            return sdk_api.get_managed_singleton(path.singleton)
+        local singleton_name = path.singleton
+        if path.game_namespace then
+            local resolved_name, namespace_err = attempt("sdk.game_namespace(" .. path.singleton .. ")", function()
+                return sdk_api.game_namespace(path.singleton)
+            end)
+            table.insert(checks, { path = "game_namespace:" .. path.singleton, ok = resolved_name ~= nil, detail = namespace_err or tostring(resolved_name) })
+            singleton_name = resolved_name
+        end
+
+        local manager, manager_err = attempt("sdk.get_managed_singleton(" .. tostring(singleton_name) .. ")", function()
+            if singleton_name == nil then return nil end
+            return sdk_api.get_managed_singleton(singleton_name)
         end)
-        table.insert(checks, { path = path.singleton, ok = manager ~= nil, detail = manager_err or "managed singleton available" })
+        table.insert(checks, { path = tostring(singleton_name), ok = manager ~= nil, detail = manager_err or "managed singleton available" })
 
         if manager ~= nil then
             for _, accessor in ipairs(path.accessors) do
-                local player, accessor_err = attempt(path.singleton .. ":" .. accessor, function()
+                local player, accessor_err = attempt(tostring(singleton_name) .. ":" .. accessor, function()
                     return manager:call(accessor)
                 end)
-                table.insert(checks, { path = path.singleton .. ":" .. accessor, ok = player ~= nil, detail = accessor_err or "player object available" })
+                table.insert(checks, { path = tostring(singleton_name) .. ":" .. accessor, ok = player ~= nil, detail = accessor_err or "player object available" })
                 if player ~= nil then return player, checks end
             end
         end

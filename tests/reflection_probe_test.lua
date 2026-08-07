@@ -16,8 +16,15 @@ local player_type = {
 }
 
 local player = { get_type_definition = function() return player_type end }
-local manager = { call = function(_, method) if method == "get_CurrentPlayer" then return player end error("unexpected accessor") end }
-local sdk_api = { get_managed_singleton = function(name) assert(name == "app.PlayerManager") return manager end }
+local sdk_api = {
+    game_namespace = function(name) assert(name == "PropsManager") return "app.PropsManager" end,
+    get_managed_singleton = function(name)
+        if name == "app.PropsManager" then
+            return { call = function(_, method) assert(method == "get_Player") return player end }
+        end
+        error("unexpected singleton: " .. tostring(name))
+    end,
+}
 
 local result = ReflectionProbe.run(sdk_api)
 assert(result.ok == true)
@@ -26,7 +33,7 @@ assert(result.parent_type == "via.Component")
 assert(result.fields[1] == "System.Single Health")
 assert(result.methods[1] == "System.Single get_Health()")
 
-local missing = ReflectionProbe.run({ get_managed_singleton = function() return nil end })
+local missing = ReflectionProbe.run({ game_namespace = function() return "app.PropsManager" end, get_managed_singleton = function() return nil end })
 assert(missing.ok == false)
 assert(missing.error == "No compatible player access path succeeded")
 
