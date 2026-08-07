@@ -4,8 +4,10 @@ All notable project changes will be documented here.
 
 ## [Unreleased]
 
+### Added
+- v0.3.6 read-only Reflection Probe with safe player resolution and field/method metadata reporting
+
 ### Planned
-- v0.3.6 Reflection Probe
 - v0.3.7 Field Explorer
 - v0.3.8 Method Explorer
 - v0.4.0 Integrated Developer Toolkit
